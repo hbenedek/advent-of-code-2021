@@ -10,19 +10,19 @@ using namespace std;
 
 vector<string> readVector(string path);
 string splitLine_end(string line);
-string splitLine_begin(string line)
+string splitLine_begin(string line);
 bool findElement(int array[4], int element);
 void countUnique(string words, int& counter);
-void find_0(string words)
-void find_1(string words)
-void find_2(string words)
-void find_3(string words)
-void find_4(string words)
-void find_5(string words)
-void find_6(string words)
-void find_7(string words)
-void find_8(string words)
-void find_9(string words)
+void find_0(string words);
+void find_1(string words);
+void find_2(string words);
+void find_3(string words);
+void find_4(string words);
+void find_5(string words);
+void find_6(string words);
+void find_7(string words);
+void find_8(string words);
+void find_9(string words);
 
 int main(){
     vector<string> vec = readVector("inputs/advent8.txt");
@@ -72,7 +72,7 @@ string splitLine_end(string line)
 {
     string delimiter = " | ";
     string token2 = line.erase(0, line.find(delimiter) + delimiter.length());
-    return token;
+    return token2;
 }
 
 string splitLine_begin(string line)
