@@ -13,28 +13,17 @@ using namespace std;
 vector<vector<int>> readVector(string path);
 void printMatrix(vector<vector<int>> vec);
 bool isLocalMin(vector<vector<int>> vec, int i, int j);
+void  solve_91(vector<vector<int>> vec);
+void solve_92(vector<vector<int>> vec);
+int getBasin(int i, int j, vector<vector<int>>& isBasin, vector<vector<int>>& vec);
 
 int main()
 {
     //read input
-    vector<vector<int>> vec = readVector("inputs/advent9.txt");
-    vector<int> results;
+    vector<vector<int>> vec = readVector("inputs/advent9_test.txt");
     //printMatrix(vec);
-
-    for (int i = 1; i < vec.size() - 1; i++)
-    {
-        for (int j = 1; j < vec[i].size() - 1; j++)
-        {
-            if (isLocalMin(vec, i, j))
-            {
-                results.push_back(vec[i][j] + 1);
-            }
-            
-        }
-        
-    }
-    cout << accumulate(results.begin(), results.end(), 0); 
-    
+    //solve_91(vec);
+    solve_92(vec);
     return 0;
 }
 
@@ -94,4 +83,85 @@ bool isLocalMin(vector<vector<int>> vec, int i, int j)
     {
         return false;
     }
+}
+
+void solve_91(vector<vector<int>> vec)
+{
+    vector<int> results;
+    for (int i = 1; i < vec.size() - 1; i++)
+    {
+        for (int j = 1; j < vec[i].size() - 1; j++)
+        {
+            if (isLocalMin(vec, i, j))
+            {
+                results.push_back(vec[i][j] + 1);
+            }   
+        }
+    }
+    cout << accumulate(results.begin(), results.end(), 0); 
+}
+
+int getBasin(int i, int j, vector<vector<int>>& isBasin, vector<vector<int>>& vec)
+{
+    int currentSize = 1;
+    vector<tuple<int,int>> notProcessed;
+    notProcessed.push_back({i, j});
+  
+    while (notProcessed.size() > 0)
+    {
+        tuple<int,int> temp = notProcessed[0];
+        int i = get<0>(temp);
+        int j = get<1>(temp);
+        isBasin[i][j] = 1;
+        notProcessed.erase(notProcessed.begin());
+
+        if (vec[i + 1][j] != 9)
+        {
+            notProcessed.push_back({i + 1, j});
+            currentSize = currentSize + 1;
+        }
+        if (vec[i - 1][j] != 9)
+        {
+            notProcessed.push_back({i - 1, j});
+            currentSize = currentSize + 1;
+        }
+        if (vec[i][j - 1] != 9)
+        {
+            notProcessed.push_back({i, j - 1});
+            currentSize = currentSize + 1;
+        }
+        if (vec[i][j + 1] != 9)
+        {
+            notProcessed.push_back({i, j + 1});
+            currentSize = currentSize + 1;
+        }    
+    }
+    return currentSize;
+}
+
+void solve_92(vector<vector<int>> vec)
+{
+    vector<int> allBasin;
+    vector<vector<int> > isBasin(vec.size() + 2,vector<int>(vec[0].size() + 2, 0));
+    
+    for (int i = 1; i < vec.size() - 1; i++)
+    {
+        for (int j = 1; j < vec[i].size() - 1; j++)
+        {
+            if (isBasin[i][j] == 0 && !(vec[i][j] == 9))
+            {
+                allBasin.push_back(getBasin(i, j, isBasin, vec));
+            }
+        }
+        
+    }
+    sort(allBasin.begin(), allBasin.end());
+
+    int result = allBasin[0] * allBasin[1] * allBasin[2];
+    for (int i = 0; i < allBasin.size(); i++)
+    {
+        cout << allBasin[i]<< ' ';
+    }
+    
+    cout << result;
 }
