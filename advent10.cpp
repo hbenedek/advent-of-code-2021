@@ -14,17 +14,31 @@ using namespace std;
 
 vector<string> readVector(string path);
 int checkLine(string line);
+void solve_10_1(vector<string> vec);
+string isCorrupted(string line);
+long long calculateScore(string correction);
+string reverseStack(stack<char> checker);
 
 int main()
 {
     vector<string> vec = readVector("./inputs/advent10.txt");
-    vector<int> results;
+    vector<long long> results;
 
     for (int i = 0; i < vec.size(); i++)
     {
-        results.push_back(checkLine(vec[i]));
+        string correction = isCorrupted(vec[i]);
+        if (correction != "")
+        {
+            results.push_back(calculateScore(correction));
+        }
+        
     }
-    cout << accumulate(results.begin(), results.end(), 0); 
+    
+    sort(results.begin(), results.end());
+    long long m = (results.size()) / 2;
+    cout << results[m]<<endl;
+
+     
 
     return 0;
 }
@@ -73,5 +87,76 @@ int checkLine(string line)
        
     }
     return 0;
+}
+
+string isCorrupted(string line)
+{
+    stack<char> checker;
+    map<char, char> pairs = {{'(', ')'}, {'[', ']'}, {'{', '}'}, {'<', '>'}};
+    map<char, int> closes = {{')', 1}, {']', 2}, {'}', 3}, {'>', 4}};
+
+    for (int i = 0; i < line.size(); i++)
+    {
+        if (checker.empty())
+        {
+            checker.push(line[i]);
+        } 
+        else
+        {
+            if (pairs[checker.top()] == line[i])
+            {
+                checker.pop();
+            }
+            else if (closes.count(line[i]) == 1)
+            {
+                return ""; 
+            }
+            else
+            {
+                checker.push(line[i]);
+            }
+            
+        }
+       
+    }    
+    return reverseStack(checker);
+}
+
+string reverseStack(stack<char> checker)
+{
+    string result;
+    map<char, char> pairs = {{'(', ')'}, {'[', ']'}, {'{', '}'}, {'<', '>'}};
+    while (!checker.empty())
+    {
+        string str(1, pairs[checker.top()]); 
+        result.insert(0, str);
+        checker.pop();
+    }
+    reverse(result.begin(), result.end());
+    return result;
+}
+
+
+void solve_10_1(vector<string> vec)
+{
+    vector<int> results;
+
+    for (int i = 0; i < vec.size(); i++)
+    {
+        results.push_back(checkLine(vec[i]));
+    }
+    cout << accumulate(results.begin(), results.end(), 0); 
+}
+
+long long calculateScore(string correction)
+{
+    map<char, long long> scoreTable = {{')', 1}, {']', 2}, {'}', 3}, {'>', 4}};
+    long long score = 0;
+    for (int i = 0; i < correction.size(); i++)
+    {
+        score = score * 5 + scoreTable[correction[i]];
+    }
+    return score;
+    
 }
 
